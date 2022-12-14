@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Link  } from 'react';
 
 import Toast from 'react-bootstrap/Toast';
 import Container from 'react-bootstrap/Container';
@@ -23,11 +23,15 @@ import './App.css';
 // };
 
 const AuthRedirect = ({ children }) => {
-  const [show, toggleShow] = useState(true);
+  const [show, toggleShow] = useState(false);
 
   return (
     <>
-      {!show && <Button onClick={() => toggleShow(true)}>Login</Button>}
+      {!show && <Button onClick={() => {
+        toggleShow(true)
+        window.location = "https://example.com/"
+        }}>Login</Button>}
+        
       <Toast show={show} onClose={() => toggleShow(false)}>
         <Toast.Header>
           <strong className="mr-auto">Redirect</strong>
