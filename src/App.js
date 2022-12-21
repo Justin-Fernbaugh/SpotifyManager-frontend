@@ -67,6 +67,9 @@ const AllPlaylists = async () => {
 
 function RenderResult() {
   const [apiResponse, setApiResponse] = useState(["Loading"]);
+  const queryParams = new URLSearchParams(window.location.search)
+  const accessToken = queryParams.get("accessToken")
+  const refreshToken = queryParams.get("refreshToken")
 
   useEffect(() => {
     AllPlaylists().then(
@@ -74,6 +77,9 @@ function RenderResult() {
             setApiResponse(result)
           });
   },[]);
+
+  if(!accessToken) return(null);
+  if(!refreshToken) return(null);
 
   return(
       <div>
@@ -95,8 +101,7 @@ const Auth = ({ children }) => {
     <>
       {!show && <Button onClick={() => {
         toggleShow(true)
-        // window.location = "http://localhost:4000/login"
-        window.open('http://localhost:4000/login')
+        window.location = "http://localhost:4000/login"
         }}>Login</Button>}
 
       <Toast show={show} onClose={() => toggleShow(false)}>
