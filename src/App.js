@@ -59,14 +59,15 @@ const AllPlaylists = async () => {
   for(let i=0; i < jsonResponse.length; i++)
     playlistNames.push(jsonResponse[i].name);
 
-  console.log(playlistNames);
-  console.log(jsonResponse);
+  // console.log(playlistNames);
   // return JSON.stringify(playlistNames);
   return playlistNames;
 }
 
 function RenderResult() {
   const [apiResponse, setApiResponse] = useState(["Loading"]);
+  const [show, toggleShow] = useState(false);
+
   const queryParams = new URLSearchParams(window.location.search)
   const accessToken = queryParams.get("accessToken")
   const refreshToken = queryParams.get("refreshToken")
@@ -87,9 +88,19 @@ function RenderResult() {
           {
             apiResponse.map((m, i) => {
               // return <a href={`#${m}`}>{(i ? '\n ' : '') + m}</a>;
-              return <p>{(i ? ' ' : '') + m}</p>;
+              return(
+                <div>
+                <p className="font-weight-bold">{(i ? ' ' : '') + m}</p>
+                {!show && <Button onClick={() => {
+                  toggleShow(true)
+                  console.log('CLICKED ');
+                }}>View Songs</Button>
+                }
+                </div>
+              );
             })
           }
+          
       </div>
   );
 };
