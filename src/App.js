@@ -1,105 +1,106 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from "react";
 
-import Toast from 'react-bootstrap/Toast';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
+const Playlist = ({ title, playlist, onDrop }) => {
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const song = e.dataTransfer.getData("text");
+    onDrop(song);
+  };
 
-import './App.css';
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
 
-const AllPlaylists = async () => {
-  const queryParams = new URLSearchParams(window.location.search)
-  const accessToken = queryParams.get("accessToken")
-  const refreshToken = queryParams.get("refreshToken")
-  const params = `?accessToken=${accessToken}&refreshToken=${refreshToken}`
-
-  if(!accessToken) return(null);
-  if(!refreshToken) return(null);
-
-  const response = await fetch(`http://localhost:4000/api/playlist/all${params}`);
-  const jsonResponse = await response.json();
-
-  let playlistNames = [];
-  for(let i=0; i < jsonResponse.length; i++)
-    playlistNames.push(jsonResponse[i].name);
-
-  // console.log(playlistNames);
-  // return JSON.stringify(playlistNames);
-  return playlistNames;
-}
-
-function RenderResult() {
-  const [apiResponse, setApiResponse] = useState(["Loading"]);
-  const [show, toggleShow] = useState(false);
-
-  const queryParams = new URLSearchParams(window.location.search)
-  const accessToken = queryParams.get("accessToken")
-  const refreshToken = queryParams.get("refreshToken")
-
-  useEffect(() => {
-    AllPlaylists().then(
-          result => {
-            setApiResponse(result)
-          });
-  },[]);
-
-  if(!accessToken) return(null);
-  if(!refreshToken) return(null);
-
-  return(
-      <div>
-          <h1 className="h-100 d-flex align-items-center justify-content-center">Playlists</h1>
-          {
-            apiResponse.map((m, i) => {
-              // return <a href={`#${m}`}>{(i ? '\n ' : '') + m}</a>;
-              return(
-                <div>
-                <p className="font-weight-bold">{(i ? ' ' : '') + m}</p>
-                {!show && <Button onClick={() => {
-                  toggleShow(true)
-                  console.log('CLICKED ');
-                }}>View Songs</Button>
-                }
-                </div>
-              );
-            })
-          }
-          
-      </div>
-  );
-};
-
-const Auth = ({ children }) => {
-  const [show, toggleShow] = useState(false);
+  const handleDragStart = (e, song) => {
+    e.dataTransfer.setData("text", song);
+  };
 
   return (
-    <>
-      {!show && <Button onClick={() => {
-        toggleShow(true)
-        window.location = "http://localhost:4000/login"
-        }}>Login</Button>}
-
-      <Toast show={show} onClose={() => toggleShow(false)}>
-        <Toast.Header>
-          <strong className="mr-auto">Redirect</strong>
-        </Toast.Header>
-        <Toast.Body>{children}</Toast.Body>
-      </Toast>
-    </>
+    <div style={{ flex: 1 }}>
+      <h2 style={{ textAlign: "center" }}>{title}</h2>
+      <ul
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        style={{
+          listStyle: "none",
+          padding: "0",
+          margin: "0",
+          textAlign: "center",
+          overflowY: "scroll",
+          height: "500px",
+          backgroundColor: "#e0e0e0",
+          boxShadow: "2px 2px 5px #888888",
+          borderRadius: "5px",
+        }}
+      >
+        {playlist.map((song, index) => (
+          <li
+            key={index}
+            style={{ padding: "10px 0" }}
+            draggable
+            onDragStart={(e) => handleDragStart(e, song)}
+          >
+            {song}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-const App = () => (
-  <Container className="p-3">
-    <Container className="p-5 mb-4 bg-light rounded-3">
-      <h1 className="header">Spotify Manager</h1>
-      <div className="login h-100 d-flex align-items-center justify-content-center">
-        <Auth>
-          Sign into Spotify in opened window
-        </Auth>
-      </div>
-      <RenderResult/>
-    </Container>
-  </Container>
-);
+const ScrollingPlaylists = () => {
+  const [playlist1, setPlaylist1] = useState([
+    "song1",
+    "song2",
+    "song3",
+    "song4",
+    "song5",
+    "song6",
+  ]);
+  const [playlist2, setPlaylist2] = useState([
+    "song7",
+    "song8",
+    "song9",
+    "song10",
+    "song11",
+    "song12",
+    "song13",
+    "song14",
+    "song15",
+    "song16",
+    "song17",
+  ]);
 
-export default App;
+  const handleDrop1 = (song) => {
+    setPlaylist1([...playlist1, song]);
+    setPlaylist2(playlist2.filter((s) => s !== song));
+  };
+
+  const handleDrop2 = (song) => {
+    setPlaylist2([...playlist2, song]);
+    setPlaylist1(playlist1.filter((s) => s !== song));
+  };
+
+  return (
+    <div style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#333",
+          color: "#fff",
+          height: "50px",
+        }}
+      >
+        Playlist Manager
+      </header>
+      <div style={{ flex: 1, display: "flex" }}>
+        <Playlist title="Playlist 1" playlist={playlist1} onDrop={handleDrop1} />
+        <Playlist title="Playlist 2" playlist={playlist2} onDrop={handleDrop2} />
+      </div>
+    </div>
+  );
+};
+
+export default ScrollingPlaylists;
