@@ -4,44 +4,7 @@ import Toast from 'react-bootstrap/Toast';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 
-
 import './App.css';
-
-// const ExampleToast = ({ children }) => {
-//   const [show, toggleShow] = useState(true);
-
-//   return (
-//     <>
-//       {!show && <Button onClick={() => toggleShow(true)}>Login</Button>}
-//       <Toast show={show} onClose={() => toggleShow(false)}>
-//         <Toast.Header>
-//           <strong className="mr-auto">React-Bootstrap</strong>
-//         </Toast.Header>
-//         <Toast.Body>{children}</Toast.Body>
-//       </Toast>
-//     </>
-//   );
-// };
-
-// async function GetPlaylists(accessToken, refreshToken) {
-
-//   try {
-//     const res = await axios.get('http://localhost:4000/api/playlist/all', {
-//     params: {
-//       accessToken: accessToken,
-//       refreshToken: refreshToken
-//     }}).then(data => { console.log(data)} )
-//     //   // console.log(response.status);
-//     //   // console.log(response.statusText);
-//     //   // console.log(response.headers);
-//     //   // console.log(response.config);
-//     // });
-//     // return await res.data;
-//     return;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 const AllPlaylists = async () => {
   const queryParams = new URLSearchParams(window.location.search)
