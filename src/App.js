@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const Playlist = ({ title, playlist, onDrop }) => {
+//Globals for query parameters in the URL
+const queryParams = new URLSearchParams(window.location.search)
+const accessToken = queryParams.get("accessToken")
+const refreshToken = queryParams.get("refreshToken")
+const params = `?accessToken=${accessToken}&refreshToken=${refreshToken}`
+
+const Playlist = ({playlist, onDrop }) => {
+  // temp title -- pull from the playlist
+  let title = 'Playlist Name'
   const handleDrop = (e) => {
     e.preventDefault();
     const song = e.dataTransfer.getData("text");
@@ -49,27 +58,8 @@ const Playlist = ({ title, playlist, onDrop }) => {
 };
 
 const ScrollingPlaylists = () => {
-  const [playlist1, setPlaylist1] = useState([
-    "song1",
-    "song2",
-    "song3",
-    "song4",
-    "song5",
-    "song6",
-  ]);
-  const [playlist2, setPlaylist2] = useState([
-    "song7",
-    "song8",
-    "song9",
-    "song10",
-    "song11",
-    "song12",
-    "song13",
-    "song14",
-    "song15",
-    "song16",
-    "song17",
-  ]);
+  const [playlist1, setPlaylist1] = useState([]);
+  const [playlist2, setPlaylist2] = useState([]);
 
   const handleDrop1 = (song) => {
     setPlaylist1([...playlist1, song]);
@@ -81,8 +71,41 @@ const ScrollingPlaylists = () => {
     setPlaylist1(playlist1.filter((s) => s !== song));
   };
 
+  //useEffect() for Playlist1
+  useEffect(() => {
+    axios.get(`http://localhost:4000/api/playlist/all${params}`)
+      .then(response => {
+        // assuming the API returns an array of song objects
+        const songs = response.data;
+        for(let i=0; i < songs.length; i++)
+          setPlaylist1( arr => [...arr, songs[i].name] );
+      })
+      .catch(error => {
+        console.error("Error fetching songs:", error);
+      });
+  }, []);
+
+  //useEffect for Playlist2
+  useEffect(() => {
+    axios.get(`http://localhost:4000/api/playlist/all${params}`)
+      .then(response => {
+        // assuming the API returns an array of song objects
+        const songs = response.data;
+        for(let i=0; i < songs.length; i++)
+          setPlaylist2( arr => [...arr, songs[i].name] );
+      })
+      .catch(error => {
+        console.error("Error fetching songs:", error);
+      });
+  }, []);
+
   return (
-    <div style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+      }}
+    >
       <header
         style={{
           display: "flex",
@@ -95,9 +118,22 @@ const ScrollingPlaylists = () => {
       >
         Playlist Manager
       </header>
-      <div style={{ flex: 1, display: "flex" }}>
-        <Playlist title="Playlist 1" playlist={playlist1} onDrop={handleDrop1} />
-        <Playlist title="Playlist 2" playlist={playlist2} onDrop={handleDrop2} />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "calc(100% - 50px)",
+        }}
+      >
+        <div style={{ width: "50%" }}>
+          {/* <h2 style={{ textAlign: "center" }}>Playlist 1</h2> */}
+          <Playlist playlist={playlist1} onDrop={handleDrop1} />
+        </div>
+        <div style={{ width: "50%" }}>
+          {/* <h2 style={{ textAlign: "center" }}>Playlist 2</h2> */}
+          <Playlist playlist={playlist2} onDrop={handleDrop2} />
+        </div>
       </div>
     </div>
   );
