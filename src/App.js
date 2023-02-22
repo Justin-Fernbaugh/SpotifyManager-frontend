@@ -5,7 +5,6 @@ import axios from "axios";
 const queryParams = new URLSearchParams(window.location.search)
 const accessToken = queryParams.get("accessToken")
 const refreshToken = queryParams.get("refreshToken")
-const params = `?accessToken=${accessToken}&refreshToken=${refreshToken}`
 
 const Playlist = ({playlist, onDrop }) => {
   // temp title -- pull from the playlist
@@ -73,12 +72,19 @@ const ScrollingPlaylists = () => {
 
   //useEffect() for Playlist1
   useEffect(() => {
-    axios.get(`http://localhost:4000/api/playlist/all${params}`)
-      .then(response => {
+    let trackId = "1vUTmyeNAgM0PRaMGRD4n9"
+    axios.get(`http://localhost:4000/api/playlist/songs`, {
+      params: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        trackId: trackId,
+      },
+    }).then(response => {
         // assuming the API returns an array of song objects
         const songs = response.data;
+        console.log("songs: ", songs)
         for(let i=0; i < songs.length; i++)
-          setPlaylist1( arr => [...arr, songs[i].name] );
+          setPlaylist1( arr => [...arr, songs[i].track.name] );
       })
       .catch(error => {
         console.error("Error fetching songs:", error);
@@ -87,12 +93,18 @@ const ScrollingPlaylists = () => {
 
   //useEffect for Playlist2
   useEffect(() => {
-    axios.get(`http://localhost:4000/api/playlist/all${params}`)
-      .then(response => {
+    let trackId = "1vUTmyeNAgM0PRaMGRD4n9"
+    axios.get(`http://localhost:4000/api/playlist/songs`, {
+      params: {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        trackId: trackId,
+      },
+    }).then(response => {
         // assuming the API returns an array of song objects
         const songs = response.data;
         for(let i=0; i < songs.length; i++)
-          setPlaylist2( arr => [...arr, songs[i].name] );
+        setPlaylist2( arr => [...arr, songs[i].track.name] );
       })
       .catch(error => {
         console.error("Error fetching songs:", error);
